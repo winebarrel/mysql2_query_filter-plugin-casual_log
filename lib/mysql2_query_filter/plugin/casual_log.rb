@@ -4,7 +4,7 @@ require 'term/ansicolor'
 
 module Mysql2QueryFilter::Plugin
   class CasualLog < Filter
-    Mysql2QueryFilter.register(:casual_log, self)
+    Mysql2QueryFilter::Plugin.register(:casual_log, self)
 
     REGEXPS = {
       'select_type' => Regexp.union(
