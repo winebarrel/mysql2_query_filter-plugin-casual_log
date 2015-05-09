@@ -36,20 +36,10 @@ module Mysql2QueryFilter::Plugin
     end
 
     def filter(sql)
-      if sql =~ /\Aselect\b/i
+      if sql =~ /\A\s*select\b/i
         result = @client.query("EXPLAIN #{sql}").first
         badquery = colorize_explain(result)
-
-        if badquery
-          @out.puts "# #{sql}\n---"
-          max_key_length = result.keys.map(&:length).max
-
-          result.each do |key, value|
-            @out.puts "%*s: %s" % [max_key_length, key, value]
-          end
-
-          @out.puts
-        end
+        output_message(sql, result) if badquery
       end
     end
 
@@ -72,6 +62,17 @@ module Mysql2QueryFilter::Plugin
 
     def colored(str)
       Term::ANSIColor.red(Term::ANSIColor.bold(str))
+    end
+
+    def output_message(sql, explain)
+      message = "# #{sql}\n---\n"
+      max_key_length = explain.keys.map(&:length).max
+
+      explain.each do |key, value|
+        message << "%*s: %s\n" % [max_key_length, key, value]
+      end
+
+      @out << message
     end
   end
 end
