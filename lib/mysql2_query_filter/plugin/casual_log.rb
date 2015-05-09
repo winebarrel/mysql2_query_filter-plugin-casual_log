@@ -32,11 +32,12 @@ module Mysql2QueryFilter::Plugin
     def initialize(options)
       super
       @out = @options.delete(:out) || $stderr
+      @matcher = @options.delete(:match) || proc {|sql, query_options| true }
       @client = Mysql2::Client.new(@options)
     end
 
-    def filter(sql)
-      if sql =~ /\A\s*select\b/i
+    def filter(sql, query_options)
+      if sql =~ /\A\s*SELECT\b/i and @matcher.call(sql, query_options)
         result = @client.query("EXPLAIN #{sql}").first
         badquery = colorize_explain(result)
         output_message(sql, result) if badquery
