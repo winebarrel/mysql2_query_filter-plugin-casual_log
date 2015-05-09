@@ -47,6 +47,8 @@ client.query('SELECT * FROM user')
 #            Extra:
 ```
 
+![](http://i.gyazo.com/66a769f30eab5ff56655977d42a30f4d.png)
+
 ## Retated links
 
 * http://kamipo.github.io/talks/20140711-mysqlcasual6
