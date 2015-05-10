@@ -57,7 +57,7 @@ module Mysql2QueryFilter::Plugin
       badquery = false
 
       REGEXPS.each do |key, regexp|
-        value = explain[key] || ''
+        value = explain[key] ||= 'NULL'
 
         value.gsub!(regexp) do |m|
           badquery = true
