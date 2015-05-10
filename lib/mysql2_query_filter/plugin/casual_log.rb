@@ -38,15 +38,16 @@ module Mysql2QueryFilter::Plugin
 
     def filter(sql, query_options)
       if sql =~ /\A\s*SELECT\b/i and @matcher.call(sql, query_options)
+        badquery = false
         explains = []
 
-        @client.query("EXPLAIN #{sql}").each do |result|
-          badquery = colorize_explain(result)
-          explains << format_explain(sql, result) if badquery
+        @client.query("EXPLAIN #{sql}").each_with_index do |result, i|
+          colorize_explain(result).tap { |bq| badquery ||= bq }
+          explains << format_explain(result, i + 1)
         end
 
-        unless explains.empty?
-          @out << "# #{sql}\n" + explains.join("\n") + "\n"
+        if badquery
+          @out << "# #{sql}\n" + explains.join + "\n"
         end
       end
     end
@@ -72,8 +73,8 @@ module Mysql2QueryFilter::Plugin
       Term::ANSIColor.red(Term::ANSIColor.bold(str))
     end
 
-    def format_explain(sql, explain)
-      message = "---\n"
+    def format_explain(explain, i)
+      message = "*************************** #{i}. row ***************************\n"
       max_key_length = explain.keys.map(&:length).max
 
       explain.each do |key, value|
