@@ -29,7 +29,7 @@ Mysql2QueryFilter.configure do |filter|
   filter.plugin :casual_log, database: 'mysql'
 end
 
-Mysql2QueryFilter.enable
+Mysql2QueryFilter.enable!
 
 client = Mysql2::Client.new(host: 'localhost', username: 'root', database: 'mysql')
 client.query('SELECT * FROM user')
