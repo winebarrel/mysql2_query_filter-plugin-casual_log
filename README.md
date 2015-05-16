@@ -26,7 +26,7 @@ Or install it yourself as:
 require 'mysql2_query_filter'
 
 Mysql2QueryFilter.configure do |filter|
-  filter.plugin :casual_log, database: 'mysql'
+  filter.plugin :casual_log #, client: Mysql2::Client.new(...)
 end
 
 Mysql2QueryFilter.enable!

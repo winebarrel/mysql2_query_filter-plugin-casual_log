@@ -3,7 +3,7 @@ require 'mysql2_query_filter'
 require 'term/ansicolor'
 
 module Mysql2QueryFilter::Plugin
-  class CasualLog < Filter
+  class CasualLog < Mysql2QueryFilter::Base
     Mysql2QueryFilter::Plugin.register(:casual_log, self)
 
     REGEXPS = {
@@ -31,34 +31,46 @@ module Mysql2QueryFilter::Plugin
 
     def initialize(options)
       super
-      @out = @options.delete(:out) || $stderr
-      @matcher = @options.delete(:match) || proc {|sql, query_options| true }
-      @client = Mysql2::Client.new(@options)
+      @out = @options[:out] || $stderr
+      @matcher = @options[:match] || proc {|sql, client| true }
+      @client = @options[:client]
     end
 
-    def filter(sql, query_options)
-      if sql =~ /\A\s*SELECT\b/i and @matcher.call(sql, query_options)
+    def filter(sql, client)
+      if sql =~ /\A\s*SELECT\b/i and @matcher.call(sql, client)
+        conn = @client || client
         badquery = false
         explains = []
 
-        @client.query("EXPLAIN #{sql}").each_with_index do |result, i|
-          colorize_explain(result).tap { |bq| badquery ||= bq }
+        conn.query("EXPLAIN #{sql}", :as => :hash).each_with_index do |result, i|
+          colorize_explain(result).tap {|bq| badquery ||= bq }
           explains << format_explain(result, i + 1)
         end
 
         if badquery
-          @out << "# #{sql}\n" + explains.join + "\n"
+          query_options = conn.query_options.dup
+          query_options.delete(:password)
+
+          @out << <<-EOS
+# Time: #{Time.now.strftime("%Y-%m-%d %H:%M:%S")}
+# Query options: #{query_options.inspect}
+# Query: #{sql}
+#{explains.join("\n")}
+          EOS
         end
       end
+    rescue => e
+      $stderr.puts colored([e.message, e.backtrace.first].join("\n"))
     end
 
     private
 
-    def colorize_explain(explain)
+    def colorize_explain(explain_result)
       badquery = false
 
       REGEXPS.each do |key, regexp|
-        value = explain[key] ||= 'NULL'
+        value = explain_result[key] ||= 'NULL'
+        value = value.to_s
 
         value.gsub!(regexp) do |m|
           badquery = true
@@ -81,7 +93,7 @@ module Mysql2QueryFilter::Plugin
         message << "%*s: %s\n" % [max_key_length, key, value]
       end
 
-      message
+      message.chomp
     end
-  end
-end
+  end # CasualLog
+end # Mysql2QueryFilter::Plugin

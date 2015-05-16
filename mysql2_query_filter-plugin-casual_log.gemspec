@@ -1,7 +1,7 @@
 # coding: utf-8
 Gem::Specification.new do |spec|
   spec.name          = 'mysql2_query_filter-plugin-casual_log'
-  spec.version       = '0.0.5'
+  spec.version       = '0.1.1'
   spec.authors       = ['Genki Sugawara']
   spec.email         = ['sgwr_dts@yahoo.co.jp']
   spec.summary       = %q{Plug-in that colorize the bad query for Mysql2QueryFilter.}
@@ -14,8 +14,10 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'mysql2_query_filter'
+  spec.add_dependency 'mysql2_query_filter', '>= 0.1.1'
   spec.add_dependency 'term-ansicolor'
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'rspec', '>= 3.0.0'
+  spec.add_development_dependency "timecop"
 end
