@@ -1,8 +1,12 @@
 # Mysql2QueryFilter::Plugin::CasualLog
 
 Plug-in that colorize the bad query for [Mysql2QueryFilter](https://github.com/winebarrel/mysql2_query_filter).
+It is porting of [MySQLCasualLog.pm](https://gist.github.com/kamipo/839e8a5b6d12bddba539).
 
-Porting of [MySQLCasualLog.pm](https://gist.github.com/kamipo/839e8a5b6d12bddba539).
+see http://kamipo.github.io/talks/20140711-mysqlcasual6
+
+[![Gem Version](https://badge.fury.io/rb/mysql2_query_filter-plugin-casual_log.svg)](http://badge.fury.io/rb/mysql2_query_filter-plugin-casual_log)
+[![Build Status](https://travis-ci.org/winebarrel/mysql2_query_filter-plugin-casual_log.svg?branch=master)](https://travis-ci.org/winebarrel/mysql2_query_filter-plugin-casual_log)
 
 ## Installation
 
@@ -48,7 +52,3 @@ client.query('SELECT * FROM user')
 ```
 
 ![](http://i.gyazo.com/66a769f30eab5ff56655977d42a30f4d.png)
-
-## Retated links
-
-* http://kamipo.github.io/talks/20140711-mysqlcasual6
